@@ -16,7 +16,10 @@ function App() {
     setLoading(true)
     setError('')
 
-    fetch(`https://picsum.photos/v2/list?page=${page}`)
+    // Try the Picsum feed first (give up after 5 seconds).
+    // If it fails, use our own copy of the feed in public/feed/page-1.json, page-2.json ...
+    fetch(`https://picsum.photos/v2/list?page=${page}`, { signal: AbortSignal.timeout(5000) })
+      .catch(() => fetch(`/feed/page-${page}.json`))
       .then((response) => response.json())
       .then((data) => {
         if (ignore) return
@@ -47,13 +50,15 @@ function App() {
       const nearBottom = scrolledTo >= pageHeight - 300
 
       if (nearBottom && !loading && hasMore && !error) {
-        setPage((oldPage) => oldPage + 1)
+        // page + 1 (not oldPage + 1): if the scroll event fires twice quickly,
+        // both calls ask for the same page, so no page gets skipped
+        setPage(page + 1)
       }
     }
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [loading, hasMore, error])
+  }, [page, loading, hasMore, error])
 
   return (
     <div className="app">

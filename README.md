@@ -38,6 +38,20 @@ Then open http://localhost:5173.
 2. A second `useEffect` adds a `scroll` listener. When the user is within 300px of the bottom (and nothing is loading), it increases `page` by 1, which triggers the first effect again.
 3. When a page comes back with no data, `hasMore` becomes `false`, so no more pages are requested.
 
+### Backup feed (when picsum.photos can't be reached)
+
+Some networks block picsum.photos, so the project includes its own copy of the feed in the same format:
+
+```
+public/feed/page-1.json   5 photos
+public/feed/page-2.json   5 photos
+public/feed/page-3.json   5 photos
+public/feed/page-4.json   []  (empty, so the app knows it reached the end)
+public/feed/images/       the 15 pictures
+```
+
+The app always tries `https://picsum.photos/v2/list?page=N` first. If that fails or takes longer than 5 seconds, it loads `/feed/page-N.json` instead.
+
 ## Tech
 
 React + Vite, plain CSS, Font Awesome (`@fortawesome/fontawesome-free`).

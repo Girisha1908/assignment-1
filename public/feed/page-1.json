@@ -1,0 +1,27 @@
+[
+  {
+    "id": "local-1",
+    "author": "Aarav Mehta",
+    "download_url": "/feed/images/photo-1.jpg"
+  },
+  {
+    "id": "local-2",
+    "author": "Diya Sharma",
+    "download_url": "/feed/images/photo-2.jpg"
+  },
+  {
+    "id": "local-3",
+    "author": "Kabir Rao",
+    "download_url": "/feed/images/photo-3.jpg"
+  },
+  {
+    "id": "local-4",
+    "author": "Ananya Iyer",
+    "download_url": "/feed/images/photo-4.jpg"
+  },
+  {
+    "id": "local-5",
+    "author": "Rohan Das",
+    "download_url": "/feed/images/photo-5.jpg"
+  }
+]
