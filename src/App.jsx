@@ -63,7 +63,7 @@ function App() {
   return (
     <div className="app">
       <header className="header">
-        <p className="eyebrow">Picsum feed</p>
+        <p className="eyebrow">Photo feed</p>
         <h1 className="title">
           The <em>Gallery</em>
         </h1>
