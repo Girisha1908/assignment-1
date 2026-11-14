@@ -1,0 +1,26 @@
+/* Colours used across the app */
+:root {
+  --bg: #f4f1ea;
+  --card: #ffffff;
+  --text: #1d1b18;
+  --muted: #8a847a;
+  --border: #e6e1d6;
+  --accent: #d9480f;
+  --accent-soft: #fff0e8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
