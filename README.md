@@ -2,14 +2,18 @@
 
 Assignment 1 for the Exactspace Front End / UI Developer Internship.
 
-A single-page React app that shows photos from the [Picsum](https://picsum.photos) API in one column.
+A single-page React app that shows photos in one column.
 When you get near the bottom of the page, the next page of photos loads and is added to the list.
-This keeps going until the API returns an empty page.
+This keeps going until a page comes back empty.
+
+For each page, the app first asks the [Picsum](https://picsum.photos) API (`https://picsum.photos/v2/list?page=N`).
+If Picsum doesn't answer within 5 seconds, it loads the same page from the project's own feed in `public/feed/` instead
+(see [Backup feed](#backup-feed-when-picsumphotos-cant-be-reached)).
 
 ## Features
 
 - One-column feed showing each photo (`download_url`) with its `author`
-- Infinite scroll: loads `https://picsum.photos/v2/list?page=N` for N = 1, 2, 3 … and stops at the first empty page
+- Infinite scroll: loads page 1, 2, 3 … one at a time and stops at the first empty page
 - Thumbs-up button on every photo (Font Awesome icon) with a count that starts at 0 and goes up by 1 on each click
 - Loading, error and "end of feed" messages
 - Responsive layout that works on mobile and desktop
@@ -50,7 +54,10 @@ public/feed/page-4.json   []  (empty, so the app knows it reached the end)
 public/feed/images/       the 15 pictures
 ```
 
-The app always tries `https://picsum.photos/v2/list?page=N` first. If that fails or takes longer than 5 seconds, it loads `/feed/page-N.json` instead.
+For every page, the app tries `https://picsum.photos/v2/list?page=N` first. If that request fails or takes longer than 5 seconds, it loads `/feed/page-N.json` instead.
+
+With the backup feed, you get 15 photos over 3 pages, then the "end of feed" message.
+The author names in the backup feed are placeholders.
 
 ## Tech
 
