@@ -5,7 +5,8 @@ function PhotoCard({ photo }) {
   const [likes, setLikes] = useState(0) // every card starts with 0 likes
 
   function handleLike() {
-    setLikes(likes + 1)
+    // use the latest count, so rapid clicks are never lost
+    setLikes((oldLikes) => oldLikes + 1)
   }
 
   return (

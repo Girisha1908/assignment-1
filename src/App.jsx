@@ -1,24 +1,26 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import PhotoCard from './PhotoCard.jsx'
 import './App.css'
 
 function App() {
   const [photos, setPhotos] = useState([]) // all photos loaded so far
   const [page, setPage] = useState(1) // which page to load next
-  const [loading, setLoading] = useState(false) // true while a page is downloading
+  const [loading, setLoading] = useState(true) // true while a page is downloading (page 1 starts right away)
   const [hasMore, setHasMore] = useState(true) // false once a page comes back empty
   const [error, setError] = useState('')
+  const bottomRef = useRef(null) // invisible marker at the end of the list
 
   // 1. Load a page of photos every time `page` changes
   useEffect(() => {
     let ignore = false // stops a request from being used twice (React StrictMode runs effects twice in dev)
 
-    setLoading(true)
-    setError('')
-
-    // Try the Picsum feed first (give up after 5 seconds).
+    // Try the Picsum feed first (give up after 5 seconds or on an error status).
     // If it fails, use our own copy of the feed in public/feed/page-1.json, page-2.json ...
     fetch(`https://picsum.photos/v2/list?page=${page}`, { signal: AbortSignal.timeout(5000) })
+      .then((response) => {
+        if (!response.ok) throw new Error(`Picsum returned ${response.status}`)
+        return response
+      })
       .catch(() => fetch(`/feed/page-${page}.json`))
       .then((response) => response.json())
       .then((data) => {
@@ -42,23 +44,25 @@ function App() {
     }
   }, [page])
 
-  // 2. Watch the scroll position. When the user is near the bottom, ask for the next page.
+  // 2. When the marker at the bottom of the list comes within 300px of the screen, load the next page.
+  // The observer is created again after every load, so if a page is too short to fill the screen
+  // the marker is still visible and the next page loads straight away (no scrolling needed).
   useEffect(() => {
-    function handleScroll() {
-      const scrolledTo = window.innerHeight + window.scrollY
-      const pageHeight = document.documentElement.scrollHeight
-      const nearBottom = scrolledTo >= pageHeight - 300
+    if (loading || !hasMore || error) return
 
-      if (nearBottom && !loading && hasMore && !error) {
-        // page + 1 (not oldPage + 1): if the scroll event fires twice quickly,
-        // both calls ask for the same page, so no page gets skipped
-        setPage(page + 1)
-      }
-    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting) return
+        observer.disconnect() // ask for one page only, even if the observer fires again
+        setLoading(true)
+        setPage((oldPage) => oldPage + 1)
+      },
+      { rootMargin: '0px 0px 300px 0px' },
+    )
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [page, loading, hasMore, error])
+    observer.observe(bottomRef.current)
+    return () => observer.disconnect()
+  }, [loading, hasMore, error])
 
   return (
     <div className="app">
@@ -75,6 +79,8 @@ function App() {
           <PhotoCard key={photo.id} photo={photo} />
         ))}
       </main>
+
+      <div ref={bottomRef} aria-hidden="true"></div>
 
       <footer className="status">
         {loading && (

@@ -39,7 +39,7 @@ Then open http://localhost:5173.
 ### How infinite scroll works
 
 1. `page` starts at 1. A `useEffect` fetches that page whenever `page` changes and adds the results to `photos`.
-2. A second `useEffect` adds a `scroll` listener. When the user is within 300px of the bottom (and nothing is loading), it increases `page` by 1, which triggers the first effect again.
+2. An empty marker `<div>` sits after the last photo. A second `useEffect` watches it with an `IntersectionObserver`. When it comes within 300px of the screen (and nothing is loading), `page` goes up by 1, which triggers the first effect again. The observer is recreated after every load, so if a page is too short to fill the screen, the next page loads without the user having to scroll.
 3. When a page comes back with no data, `hasMore` becomes `false`, so no more pages are requested.
 
 ### Backup feed (when picsum.photos can't be reached)
