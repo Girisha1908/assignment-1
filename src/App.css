@@ -1,164 +1,62 @@
-/* ---------- Page layout ---------- */
+/* Single column layout */
 .app {
   max-width: 600px;
   margin: 0 auto;
-  padding: 0 16px 48px;
-}
-
-/* ---------- Header ---------- */
-.header {
-  text-align: center;
-  padding: 56px 0 32px;
-}
-
-.eyebrow {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--accent);
+  padding: 0 16px;
 }
 
 .title {
-  margin: 8px 0;
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-size: 64px;
-  font-weight: 400;
-  line-height: 1;
+  text-align: center;
+  margin: 32px 0;
 }
 
-.title em {
-  color: var(--accent);
-}
-
-.subtitle {
-  margin: 0;
-  color: var(--muted);
-  font-size: 15px;
-}
-
-/* ---------- Feed: a single column of cards ---------- */
 .feed {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
 }
 
+/* Photo card */
 .card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.05);
-}
-
-/* Author row at the top of each card */
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-}
-
-.avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--text);
-  color: var(--bg);
-  font-weight: 700;
-  font-size: 14px;
 }
 
 .author {
-  font-weight: 700;
-  font-size: 15px;
-}
-
-/* Image area: grey box shows while the photo is still loading */
-.image-box {
-  background: #ece8df;
-  aspect-ratio: 3 / 2;
+  margin: 0;
+  padding: 12px 16px;
+  font-weight: bold;
 }
 
 .photo {
   display: block;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 3 / 2;
   object-fit: cover;
+  background: #eee;
 }
 
-/* Like button row at the bottom of each card */
-.card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-}
-
+/* Thumbs up button with count */
 .like-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
+  margin: 12px 16px;
+  padding: 6px 14px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background: #fff;
   font-size: 16px;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
 }
 
 .like-button:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  color: #1877f2;
+  border-color: #1877f2;
 }
 
-.like-button:active {
-  transform: scale(0.92);
-}
-
-.like-button.liked {
-  background: var(--accent-soft);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.like-count {
-  font-weight: 700;
-  font-size: 15px;
-  min-width: 1ch;
-}
-
-.photo-id {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-/* ---------- Loading / end messages ---------- */
+/* Loading / end message */
 .status {
   text-align: center;
-  color: var(--muted);
-  padding: 32px 0;
-  font-size: 15px;
-}
-
-.error {
-  color: var(--accent);
-}
-
-/* ---------- Small screens ---------- */
-@media (max-width: 480px) {
-  .header {
-    padding: 36px 0 24px;
-  }
-
-  .title {
-    font-size: 48px;
-  }
+  color: #777;
+  padding: 24px 0;
 }

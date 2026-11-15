@@ -2,40 +2,34 @@ import { useState, useEffect, useRef } from 'react'
 import PhotoCard from './PhotoCard.jsx'
 import './App.css'
 
+const API_URL = 'https://picsum.photos/v2/list?page='
+
 function App() {
   const [photos, setPhotos] = useState([]) // all photos loaded so far
-  const [page, setPage] = useState(1) // which page to load next
-  const [loading, setLoading] = useState(true) // true while a page is downloading (page 1 starts right away)
-  const [hasMore, setHasMore] = useState(true) // false once a page comes back empty
-  const [error, setError] = useState('')
-  const bottomRef = useRef(null) // invisible marker at the end of the list
+  const [page, setPage] = useState(1) // page to load
+  const [loading, setLoading] = useState(true) // true while a page is loading
+  const [hasMore, setHasMore] = useState(true) // false once a page has no data
+  const [error, setError] = useState(false)
+  const bottomRef = useRef(null) // marker after the last photo
 
-  // 1. Load a page of photos every time `page` changes
+  // Load a page whenever `page` changes
   useEffect(() => {
-    let ignore = false // stops a request from being used twice (React StrictMode runs effects twice in dev)
+    let ignore = false // ignore the result if this effect was cleaned up
 
-    // Try the Picsum feed first (give up after 5 seconds or on an error status).
-    // If it fails, use our own copy of the feed in public/feed/page-1.json, page-2.json ...
-    fetch(`https://picsum.photos/v2/list?page=${page}`, { signal: AbortSignal.timeout(5000) })
-      .then((response) => {
-        if (!response.ok) throw new Error(`Picsum returned ${response.status}`)
-        return response
-      })
-      .catch(() => fetch(`/feed/page-${page}.json`))
+    fetch(API_URL + page)
       .then((response) => response.json())
       .then((data) => {
         if (ignore) return
-
         if (data.length === 0) {
-          setHasMore(false) // no more data, stop loading pages
+          setHasMore(false) // empty page: stop loading
         } else {
-          setPhotos((oldPhotos) => [...oldPhotos, ...data]) // add new photos to the end
+          setPhotos((oldPhotos) => [...oldPhotos, ...data])
         }
         setLoading(false)
       })
       .catch(() => {
         if (ignore) return
-        setError('Could not load photos. Please refresh the page.')
+        setError(true)
         setLoading(false)
       })
 
@@ -44,21 +38,17 @@ function App() {
     }
   }, [page])
 
-  // 2. When the marker at the bottom of the list comes within 300px of the screen, load the next page.
-  // The observer is created again after every load, so if a page is too short to fill the screen
-  // the marker is still visible and the next page loads straight away (no scrolling needed).
+  // When the marker reaches the bottom of the screen, load the next page
   useEffect(() => {
     if (loading || !hasMore || error) return
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries[0].isIntersecting) return
-        observer.disconnect() // ask for one page only, even if the observer fires again
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        observer.disconnect()
         setLoading(true)
         setPage((oldPage) => oldPage + 1)
-      },
-      { rootMargin: '0px 0px 300px 0px' },
-    )
+      }
+    })
 
     observer.observe(bottomRef.current)
     return () => observer.disconnect()
@@ -66,13 +56,7 @@ function App() {
 
   return (
     <div className="app">
-      <header className="header">
-        <p className="eyebrow">Photo feed</p>
-        <h1 className="title">
-          The <em>Gallery</em>
-        </h1>
-        <p className="subtitle">Scroll down — new photos load automatically.</p>
-      </header>
+      <h1 className="title">Photo Gallery</h1>
 
       <main className="feed">
         {photos.map((photo) => (
@@ -80,19 +64,13 @@ function App() {
         ))}
       </main>
 
-      <div ref={bottomRef} aria-hidden="true"></div>
+      <div ref={bottomRef}></div>
 
-      <footer className="status">
-        {loading && (
-          <p>
-            <i className="fa-solid fa-spinner fa-spin"></i> Loading photos…
-          </p>
-        )}
-
-        {error && <p className="error">{error}</p>}
-
-        {!hasMore && <p>You have reached the end · {photos.length} photos</p>}
-      </footer>
+      <p className="status">
+        {loading && 'Loading...'}
+        {error && 'Could not load photos.'}
+        {!hasMore && 'No more photos.'}
+      </p>
     </div>
   )
 }
